@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ID PHOTO DIY – Professional ID Photo Maker</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet"/>
+<style>
+        :root {
+            --apple-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            --background-color: #f5f5f7;
+            --text-color: #1d1d1f;
+            --secondary-text-color: #6e6e73;
+            --highlight-color: #0071e3;
+            --card-background: #ffffff;
+            --separator-color: #d2d2d7;
+        }
+
+        body {
+            font-family: var(--apple-font);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--separator-color);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 22px;
+            height: 44px;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo svg {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 0 10px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--highlight-color);
+        }
+        
+        .cta-button {
+            background-color: var(--highlight-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 980px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        main {
+            padding-top: 100px;
+            max-width: 980px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 22px;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: -0.022em;
+        }
+
+        .hero p {
+            font-size: 24px;
+            color: var(--secondary-text-color);
+            margin-top: 16px;
+            max-width: 600px;
+        }
+
+        .main-card {
+            background-color: var(--card-background);
+            border-radius: 18px;
+            padding: 40px;
+            width: calc(100% - 44px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        
+        .upload-section {
+            width: 100%;
+            border: 2px dashed var(--separator-color);
+            border-radius: 18px;
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+
+        .upload-section:hover {
+            border-color: var(--highlight-color);
+            background-color: #f9f9fb;
+        }
+        
+        .upload-icon svg {
+            width: 60px;
+            height: 60px;
+            color: var(--highlight-color);
+            margin-bottom: 20px;
+        }
+
+        .upload-section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .upload-section p {
+            color: var(--secondary-text-color);
+            margin-top: 8px;
+        }
+
+        #file-input {
+            display: none;
+        }
+        
+        .processing-view {
+            display: none;
+            width: 100%;
+        }
+        
+        .image-editor-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .cropper-container {
+            width: 100%;
+            max-width: 450px; /* 控制裁切工具的最大寬度 */
+            height: 450px;   /* 給定一個固定高度 */
+            margin-bottom: 30px;
+            background: #eee; /* 裁切容器的背景 */
+        }
+
+        .cropper-container img {
+            display: block;
+            max-width: 100%; /* 確保圖片在容器內 */
+        }
+        
+        .controls {
+            width: 100%;
+            border-top: 1px solid var(--separator-color);
+            padding-top: 30px;
+        }
+        
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--separator-color);
+            background-color: #f9f9fb;
+            font-size: 16px;
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M5%208l5%205%205-5z%22%20fill%3D%22%236e6e73%22/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .action-button {
+            background-color: var(--highlight-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 980px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .action-button:hover {
+            background-color: #0056b3;
+        }
+        
+        .secondary-button {
+            background-color: var(--card-background);
+            color: var(--highlight-color);
+            border: 1px solid var(--highlight-color);
+        }
+        
+        .secondary-button:hover {
+            background-color: #f0f7ff;
+        }
+        
+        footer {
+            width: 100%;
+            background-color: var(--card-background);
+            border-top: 1px solid var(--separator-color);
+            margin-top: auto;
+            padding: 40px 0;
+            font-size: 12px;
+            color: var(--secondary-text-color);
+        }
+
+        .footer-content {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 22px;
+        }
+    </style>
+</head>
+<body>
+<header>
+<nav>
+<div class="logo">
+<svg fill="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25Zm0 1.5c4.549 0 8.25 3.701 8.25 8.25s-3.701 8.25-8.25 8.25-8.25-3.701-8.25-8.25S7.451 3.75 12 3.75Zm-1.5 4.5a.75.75 0 0 0-1.5 0v6a.75.75 0 0 0 1.5 0v-6Zm3 0a.75.75 0 0 0-1.5 0v6a.75.75 0 0 0 1.5 0v-6Z"></path></svg>
+               ID PHOTO DIY
+            </div>
+<div class="nav-links">
+<a href="#">Pricing</a>
+<a href="#">Support</a>
+</div>
+
+<div class="language-select">
+<select id="language-select">
+<option value="en">English</option>
+<option value="zh">繁體中文</option>
+<option value="ja">日本語</option>
+<option value="fr">Français</option>
+<option value="de">Deutsch</option>
+<option value="es">Español</option>
+</select>
+</div>
+</nav>
+</header>
+<main>
+<div class="hero">
+<h1 data-i18n="heroTitle">專業證件照，<br/>輕鬆裁切。</h1>
+<p data-i18n="heroSubtitle">上傳您的照片，選擇規格，我們的智慧裁切工具將協助您製作符合規範的專業證件照。</p>
+</div>
+<div class="main-card">
+<div class="upload-section" id="upload-view">
+<div class="upload-icon">
+<svg fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 16.5V9.75m0 0l-3.75 3.75M12 9.75l3.75 3.75M3 17.25V6.75A2.25 2.25 0 015.25 4.5h13.5A2.25 2.25 0 0121 6.75v10.5A2.25 2.25 0 0118.75 19.5H5.25A2.25 2.25 0 013 17.25z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<h2>Click or drag to upload photos</h2>
+<p>Support JPG, PNG formats</p>
+</div>
+<input accept="image/jpeg, image/png" id="file-input" type="file"/>
+<div class="processing-view" id="processing-view">
+<div class="image-editor-container">
+<div class="cropper-container">
+<img alt="待裁切圖片" id="image-to-crop"/>
+</div>
+</div>
+<div class="controls">
+<div class="control-group">
+<label data-i18n="selectLabel" for="spec-select">選擇國家／地區與證件類型</label>
+<select id="spec-select"></select>
+</div>
+<div class="action-buttons">
+<button class="action-button secondary-button" data-i18n="changePhoto" id="change-photo-btn">更換照片</button>
+<button class="action-button" data-i18n="downloadPhoto" id="crop-download-btn">完成並下載</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer>
+<div class="footer-content">
+<p>Copyright © 2025 Idphotodiy. All rights reserved.</p>
+<p>Welcome to this website.</p>
+</div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+<script>
+        const uploadView = document.getElementById('upload-view');
+        const fileInput = document.getElementById('file-input');
+        const processingView = document.getElementById('processing-view');
+        const imageToCrop = document.getElementById('image-to-crop');
+        const changePhotoButton = document.getElementById('change-photo-btn');
+        const specSelect = document.getElementById('spec-select');
+        const cropDownloadBtn = document.getElementById('crop-download-btn');
+
+        let cropper;
+        let originalFile = null;
+
+        // 觸發文件選擇
+        uploadView.addEventListener('click', () => fileInput.click());
+
+        // 處理文件上傳
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                originalFile = file; // 保存原始文件信息
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imageToCrop.src = e.target.result;
+                    
+                    uploadView.style.display = 'none';
+                    processingView.style.display = 'block';
+
+                    // 初始化 Cropper
+                    initializeCropper();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // 初始化或重置 Cropper 實例
+        function initializeCropper() {
+            if (cropper) {
+                cropper.destroy();
+            }
+            
+            const selectedSpec = specSelect.value;
+            const aspectRatio = eval(selectedSpec); // 計算長寬比
+
+            cropper = new Cropper(imageToCrop, {
+                aspectRatio: aspectRatio,
+                viewMode: 1, // 限制裁切框在圖片範圍內
+                autoCropArea: 0.8, // 初始裁切區佔圖片80%
+                dragMode: 'move', // 允許移動圖片
+                guides: true,
+                center: true,
+                background: false,
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+            });
+        }
+
+        // 當規格改變時，更新裁切比例
+        specSelect.addEventListener('change', () => {
+             if(cropper) {
+                const newAspectRatio = eval(specSelect.value);
+                cropper.setAspectRatio(newAspectRatio);
+             }
+        });
+
+        // "更換照片" 按鈕事件
+        changePhotoButton.addEventListener('click', () => {
+            if (cropper) {
+                cropper.destroy();
+            }
+            processingView.style.display = 'none';
+            uploadView.style.display = 'block';
+            fileInput.value = ''; // 重置文件輸入
+            originalFile = null;
+        });
+
+        // "完成並下載" 按鈕事件
+        cropDownloadBtn.addEventListener('click', () => {
+            if (cropper && originalFile) {
+                const croppedCanvas = cropper.getCroppedCanvas({
+                    // 為了獲得高品質圖片，可以設置較高的寬高
+                    // 實際應用中，應根據所選規格的物理尺寸和dpi來計算
+                    width: 800, 
+                    fillColor: '#FFFFFF' // 設置背景填充為白色
+                });
+
+                // 創建一個下載連結
+                const link = document.createElement('a');
+                link.href = croppedCanvas.toDataURL('image/jpeg', 0.95); // 轉換為高品質JPG
+                
+                // 從原始文件名生成新文件名
+                const originalFileName = originalFile.name.substring(0, originalFile.name.lastIndexOf('.'));
+                link.download = `${originalFileName}_passport_photo.jpg`;
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        });
+        
+        // 拖曳上傳功能
+        uploadView.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadView.style.borderColor = 'var(--highlight-color)';
+        });
+
+        uploadView.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadView.style.borderColor = 'var(--separator-color)';
+        });
+        
+        uploadView.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadView.style.borderColor = 'var(--separator-color)';
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        });
+
+    </script>
+<script>const translations = {
+    en: {
+        heroTitle: "Professional ID Photos,<br>Made Easy.",
+        heroSubtitle: "Upload your photo and select the document type. Our smart crop tool will do the rest.",
+        selectLabel: "Select Country/Region and Document Type",
+        changePhoto: "Change Photo",
+        downloadPhoto: "Download"
+    },
+    zh: {
+        heroTitle: "專業證件照，<br>輕鬆裁切。",
+        heroSubtitle: "上傳您的照片，選擇規格，我們的智慧裁切工具將協助您製作符合規範的專業證件照。",
+        selectLabel: "選擇國家／地區與證件類型",
+        changePhoto: "更換照片",
+        downloadPhoto: "完成並下載"
+    },
+    ja: {
+        heroTitle: "プロの証明写真を、<br>簡単に作成。",
+        heroSubtitle: "写真をアップロードし、証明書の種類を選択してください。自動で切り抜きます。",
+        selectLabel: "国・地域と証明書の種類を選択",
+        changePhoto: "写真を変更",
+        downloadPhoto: "ダウンロード"
+    },
+    fr: {
+        heroTitle: "Photos d'identité<br>professionnelles, simplifiées.",
+        heroSubtitle: "Téléchargez votre photo, choisissez le document, et nous nous occupons du reste.",
+        selectLabel: "Sélectionnez le pays/région et le type de document",
+        changePhoto: "Changer la photo",
+        downloadPhoto: "Télécharger"
+    },
+    de: {
+        heroTitle: "Professionelle Passfotos,<br>leicht gemacht.",
+        heroSubtitle: "Laden Sie Ihr Foto hoch, wählen Sie das Dokument aus, und wir kümmern uns um den Rest.",
+        selectLabel: "Land/Region und Dokumententyp auswählen",
+        changePhoto: "Foto ändern",
+        downloadPhoto: "Herunterladen"
+    },
+    es: {
+        heroTitle: "Fotos de identificación profesionales,<br>hechas fácilmente.",
+        heroSubtitle: "Sube tu foto y elige el tipo de documento. Nuestra herramienta inteligente se encargará del resto.",
+        selectLabel: "Selecciona país/región y tipo de documento",
+        changePhoto: "Cambiar foto",
+        downloadPhoto: "Descargar"
+    }
+};
+
+const documentOptions = {
+    en: `<optgroup label="Asia">
+        <option value="3.5/4.5">Taiwan – Passport / National ID (3.5cm x 4.5cm)</option>
+        <option value="3.5/4.5">Japan – Passport / Resume Photo (3.5cm x 4.5cm)</option>
+        <option value="3.3/4.8">China – Passport (3.3cm x 4.8cm)</option>
+    </optgroup>
+    <optgroup label="Americas">
+        <option value="1/1">United States – Passport (2" x 2")</option>
+        <option value="2/2">United States – Visa / Green Card / EAD (2" x 2")</option>
+        <option value="2/2">United States – Driver’s License (varies)</option>
+        <option value="35/45">Canada – Passport / Visa (35mm x 45mm)</option>
+    </optgroup>
+    <optgroup label="Europe">
+        <option value="35/45">United Kingdom – Passport (35mm x 45mm)</option>
+        <option value="35/45">Germany – Passport / ID Card (35mm x 45mm)</option>
+        <option value="35/45">France – Passport / Visa (35mm x 45mm)</option>
+        <option value="35/45">Italy – Passport (35mm x 45mm)</option>
+        <option value="35/45">Spain – Passport / DNI (35mm x 45mm)</option>
+        <option value="35/45">Netherlands – Passport (35mm x 45mm)</option>
+        <option value="35/45">Switzerland – Passport / ID Card (35mm x 45mm)</option>
+        <option value="35/45">Schengen Area – Visa (3.5cm x 4.5cm)</option>
+    </optgroup>
+    <optgroup label="Oceania">
+        <option value="35/45">Australia – Passport / Visa (35mm x 45mm)</option>
+        <option value="35/45">New Zealand – Passport / Driver’s License (35mm x 45mm)</option>
+    </optgroup>
+    <optgroup label="Other">
+        <option value="NaN">Custom Crop</option>
+    </optgroup>`
+};
+
+function updateLanguage(lang) {
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (translations[lang] && translations[lang][key]) {
+            el.innerHTML = translations[lang][key];
+        }
+    });
+    const specSelect = document.getElementById("spec-select");
+    if (documentOptions["en"]) {
+        specSelect.innerHTML = documentOptions["en"];
+    }
+}
+
+document.getElementById("language-select").addEventListener("change", function() {
+    updateLanguage(this.value);
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    updateLanguage("en");
+});</script></body>
+</html>
