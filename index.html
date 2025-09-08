@@ -1,554 +1,481 @@
 <!DOCTYPE html>
-
-<html lang="zh-TW">
+<html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>ID PHOTO DIY – Professional ID Photo Maker</title>
+<title>ID Photo DIY – Professional Document Photo Tool</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
-        :root {
-            --apple-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-            --background-color: #f5f5f7;
-            --text-color: #1d1d1f;
-            --secondary-text-color: #6e6e73;
-            --highlight-color: #0071e3;
-            --card-background: #ffffff;
-            --separator-color: #d2d2d7;
-        }
-
-        body {
-            font-family: var(--apple-font);
-            background-color: var(--background-color);
-            color: var(--text-color);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        header {
-            width: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
-            backdrop-filter: saturate(180%) blur(20px);
-            -webkit-backdrop-filter: saturate(180%) blur(20px);
-            position: fixed;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid var(--separator-color);
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 980px;
-            margin: 0 auto;
-            padding: 0 22px;
-            height: 44px;
-        }
-
-        .logo {
-            font-size: 1.2rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-        }
-        
-        .logo svg {
-            width: 24px;
-            height: 24px;
-            margin-right: 8px;
-        }
-
-        .nav-links a {
-            color: var(--text-color);
-            text-decoration: none;
-            font-size: 14px;
-            padding: 0 10px;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--highlight-color);
-        }
-        
-        .cta-button {
-            background-color: var(--highlight-color);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 980px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        main {
-            padding-top: 100px;
-            max-width: 980px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex-grow: 1;
-        }
-
-        .hero {
-            text-align: center;
-            padding: 60px 22px;
-        }
-
-        .hero h1 {
-            font-size: 56px;
-            font-weight: 600;
-            margin: 0;
-            letter-spacing: -0.022em;
-        }
-
-        .hero p {
-            font-size: 24px;
-            color: var(--secondary-text-color);
-            margin-top: 16px;
-            max-width: 600px;
-        }
-
-        .main-card {
-            background-color: var(--card-background);
-            border-radius: 18px;
-            padding: 40px;
-            width: calc(100% - 44px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 40px;
-        }
-        
-        .upload-section {
-            width: 100%;
-            border: 2px dashed var(--separator-color);
-            border-radius: 18px;
-            padding: 60px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: border-color 0.3s, background-color 0.3s;
-        }
-
-        .upload-section:hover {
-            border-color: var(--highlight-color);
-            background-color: #f9f9fb;
-        }
-        
-        .upload-icon svg {
-            width: 60px;
-            height: 60px;
-            color: var(--highlight-color);
-            margin-bottom: 20px;
-        }
-
-        .upload-section h2 {
-            font-size: 20px;
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .upload-section p {
-            color: var(--secondary-text-color);
-            margin-top: 8px;
-        }
-
-        #file-input {
-            display: none;
-        }
-        
-        .processing-view {
-            display: none;
-            width: 100%;
-        }
-        
-        .image-editor-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-        
-        .cropper-container {
-            width: 100%;
-            max-width: 450px; /* 控制裁切工具的最大寬度 */
-            height: 450px;   /* 給定一個固定高度 */
-            margin-bottom: 30px;
-            background: #eee; /* 裁切容器的背景 */
-        }
-
-        .cropper-container img {
-            display: block;
-            max-width: 100%; /* 確保圖片在容器內 */
-        }
-        
-        .controls {
-            width: 100%;
-            border-top: 1px solid var(--separator-color);
-            padding-top: 30px;
-        }
-        
-        .control-group {
-            margin-bottom: 25px;
-        }
-
-        .control-group label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
-        
-        select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid var(--separator-color);
-            background-color: #f9f9fb;
-            font-size: 16px;
-            -webkit-appearance: none;
-            appearance: none;
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M5%208l5%205%205-5z%22%20fill%3D%22%236e6e73%22/%3E%3C/svg%3E');
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-        }
-
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        .action-button {
-            background-color: var(--highlight-color);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 980px;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: 500;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .action-button:hover {
-            background-color: #0056b3;
-        }
-        
-        .secondary-button {
-            background-color: var(--card-background);
-            color: var(--highlight-color);
-            border: 1px solid var(--highlight-color);
-        }
-        
-        .secondary-button:hover {
-            background-color: #f0f7ff;
-        }
-        
-        footer {
-            width: 100%;
-            background-color: var(--card-background);
-            border-top: 1px solid var(--separator-color);
-            margin-top: auto;
-            padding: 40px 0;
-            font-size: 12px;
-            color: var(--secondary-text-color);
-        }
-
-        .footer-content {
-            max-width: 980px;
-            margin: 0 auto;
-            padding: 0 22px;
-        }
-    </style>
+  /* 样式完全沿用原文，无改动 */
+  :root{
+    --md-primary: #1976d2;
+    --md-primary-dark: #1565c0;
+    --md-primary-light: #e3f2fd;
+    --md-surface: #ffffff;
+    --md-bg: #f6f7fb;
+    --md-text: #1f1f1f;
+    --md-text-secondary: #6b7280;
+    --md-divider: #e5e7eb;
+    --radius: 16px;
+    --radius-sm: 8px;
+    --shadow-1: 0 2px 8px rgba(0,0,0,.08);
+    --shadow-2: 0 10px 30px rgba(0,0,0,.10);
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;font-family:'Roboto',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    background:var(--md-bg);color:var(--md-text);line-height:1.5;
+  }
+  header{position:sticky;top:0;z-index:10;
+    background:linear-gradient(135deg,var(--md-surface) 85%,#f1f6fd 100%);
+    box-shadow:0 2px 8px rgba(0,0,0,.06);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--md-divider);}
+  .appbar{max-width:1200px;margin:0 auto;height:64px;display:flex;align-items:center;gap:16px;padding:0 20px;}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.2px;font-size:18px;}
+  .brand .logo{width:36px;height:36px;border-radius:10px;
+    background:linear-gradient(45deg,var(--md-primary),#42a5f5);
+    display:flex;align-items:center;justify-content:center;color:white;
+    box-shadow:0 2px 6px rgba(25,118,210,.4);}
+  .bar-spacer{flex:1}
+  main{max-width:1200px;margin:24px auto;padding:0 20px;}
+  .grid{display:grid;grid-template-columns:340px 1fr;gap:24px;align-items:start;}
+  @media (max-width:960px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--md-surface);border-radius:var(--radius);box-shadow:var(--shadow-2);overflow:hidden;transition:var(--transition);}
+  .card:hover{box-shadow:0 15px 35px rgba(0,0,0,.12);transform:translateY(-2px);}
+  .card-header{padding:18px 24px;border-bottom:1px solid var(--md-divider);
+    display:flex;align-items:center;gap:10px;background:var(--md-primary-light);border-top:3px solid var(--md-primary);}
+  .card-title{font-weight:600;color:var(--md-primary);display:flex;align-items:center;gap:8px;}
+  .card-body{padding:24px}
+  .editor-card-body{position:relative;}
+  .dropzone{border:2px dashed var(--md-divider);border-radius:var(--radius);padding:32px 22px;text-align:center;color:var(--md-text-secondary);transition:var(--transition);cursor:pointer;
+    background-size:200% 200%;background-image:linear-gradient(135deg,#fff 0%,#fbfdff 50%,#f4f8ff 100%);}
+  .dropzone:hover{border-color:var(--md-primary);transform:translateY(-4px) scale(1.02);box-shadow:0 8px 20px rgba(25,118,210,.1);}
+  .dropzone .material-icons{font-size:42px;color:var(--md-primary);margin-bottom:12px;}
+  #file-input{display:none}
+  .cropper-shell{width:100%;height:420px;background:#eef1f6;border-radius:var(--radius);overflow:hidden;display:flex;align-items:center;justify-content:center;border:1px solid var(--md-divider);box-shadow:inset 0 2px 4px rgba(0,0,0,0.05);}
+  .cropper-shell img{max-width:100%;display:block}
+  .thumbs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;}
+  .thumb{background:#f8fafd;border:1px solid var(--md-divider);border-radius:var(--radius);padding:16px;transition:var(--transition);}
+  .thumb:hover{box-shadow:var(--shadow-1);transform:translateY(-2px);}
+  .thumb h4{margin:0 0 12px;font-size:14px;color:#374151;font-weight:600;display:flex;align-items:center;gap:6px;}
+  .thumb-box{height:160px;background:#fff;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--md-divider);box-shadow:0 2px 6px rgba(0,0,0,0.05);}
+  .thumb-box img,.thumb-box canvas{width:100%;height:100%;object-fit:contain;}
+  .control-group{margin-bottom:20px;}
+  label{display:flex;align-items:center;gap:6px;font-size:14px;color:#374151;font-weight:600;}
+  select,input[type="text"],input[type="number"]{width:100%;padding:14px 16px;border:1px solid var(--md-divider);border-radius:var(--radius-sm);background:#fff;outline:none;font-size:15px;transition:var(--transition);}
+  select:focus,input[type="text"]:focus,input[type="number"]:focus{border-color:var(--md-primary);box-shadow:0 0 0 3px rgba(25,118,210,.12)}
+  .sliders{background:#f9fafc;border-radius:var(--radius);margin:20px 0;border:1px solid var(--md-divider);padding:8px 0;}
+  .slider-container{padding:16px 20px;display:grid;grid-template-columns:100px 1fr 65px;gap:16px;align-items:center;transition:background-color .2s}
+  .slider-container:hover{background-color:#f4f6f9;}
+  .slider-container+.slider-container{border-top:1px solid var(--md-divider);}
+  .control-label{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--md-text);}
+  .control-label .icon-bg{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:var(--radius-sm);background-color:var(--md-primary-light);color:var(--md-primary);}
+  .slider-wrapper{position:relative;height:6px;}
+  .slider{-webkit-appearance:none;width:100%;position:absolute;top:0;left:0;height:6px;border-radius:999px;background:var(--md-divider);outline:none;margin:0;}
+  .slider::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--md-primary);border:none;box-shadow:0 2px 6px rgba(0,0,0,.2);cursor:pointer;transition:var(--transition);}
+  .slider::-webkit-slider-thumb:hover{transform:scale(1.15);box-shadow:0 3px 8px rgba(0,0,0,.3);}
+  .slider-fill{height:6px;background:var(--md-primary);border-radius:999px;width:var(--slider-fill,50%);pointer-events:none;}
+  .input-wrapper{display:flex;align-items:center;gap:4px;border:1px solid var(--md-divider);border-radius:var(--radius-sm);padding:4px 8px;background-color:#fff;transition:var(--transition);}
+  .input-wrapper:focus-within{border-color:var(--md-primary);box-shadow:0 0 0 3px rgba(25,118,210,.12);}
+  .manual-input{width:100%;min-width:60px;border:none;outline:none;text-align:right;font-size:14px;background:transparent;}
+  .manual-input::-webkit-outer-spin-button,.manual-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .manual-input{-moz-appearance:textfield;}
+  .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px;}
+  .btn{border:none;border-radius:999px;padding:12px 24px;font-weight:600;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;transition:var(--transition);}
+  .btn-primary{background:linear-gradient(45deg,var(--md-primary),#42a5f5);color:#fff;box-shadow:0 3px 8px rgba(25,118,210,.3);}
+  .btn-primary:hover{background:linear-gradient(45deg,var(--md-primary-dark),var(--md-primary));transform:translateY(-2px);box-shadow:0 5px 12px rgba(25,118,210,.4);}
+  .btn-tonal{background:#e8f0fe;color:#0f172a;}
+  .btn-tonal:hover{background:#dfeafd;transform:translateY(-2px);}
+  .helper{font-size:13px;color:var(--md-text-secondary);line-height:1.5;margin-top:8px;}
+  .helper.with-icon{display:flex;align-items:center;gap:6px;}
+  footer{padding:32px 0;text-align:center;color:var(--md-text-secondary);font-size:13px;margin-top:40px;}
+  .cropper-container .cropper-canvas img,.cropper-container .cropper-view-box img{filter:var(--editor-filter,none);will-change:filter;}
+  .material-icons{font-size:18px;}
+  .loading{display:inline-block;width:20px;height:20px;border:3px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;animation:spin 1s ease-in-out infinite;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:#323232;color:white;padding:12px 24px;border-radius:999px;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,0.25);z-index:1000;opacity:0;transition:all .5s cubic-bezier(.16,1,.3,1);}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .editor-overlay{position:absolute;inset:0;background:rgba(255,255,255,.7);backdrop-filter:blur(5px);z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--md-text);padding:20px;border-radius:var(--radius);transition:opacity .4s;opacity:1;pointer-events:all;}
+  .editor-overlay.hidden{opacity:0;pointer-events:none;}
+  .editor-overlay .material-icons{font-size:48px;color:var(--md-primary);}
+  /* ---------- 自定义规格输入区 ---------- */
+  #custom-box{display:none;margin-top:12px;gap:12px;flex-wrap:wrap;}
+  #custom-box.active{display:flex;}
+  .custom-opt{flex:1 1 220px;display:flex;flex-direction:column;gap:6px;}
+  .custom-opt label{font-size:13px;font-weight:600;}
+</style>
 </head>
 <body>
 <header>
-<nav>
-<div class="logo">
-<svg fill="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25Zm0 1.5c4.549 0 8.25 3.701 8.25 8.25s-3.701 8.25-8.25 8.25-8.25-3.701-8.25-8.25S7.451 3.75 12 3.75Zm-1.5 4.5a.75.75 0 0 0-1.5 0v6a.75.75 0 0 0 1.5 0v-6Zm3 0a.75.75 0 0 0-1.5 0v6a.75.75 0 0 0 1.5 0v-6Z"></path></svg>
-               ID PHOTO DIY
-            </div>
-<div class="nav-links">
-<a href="#">Pricing</a>
-<a href="#">Support</a>
-</div>
-
-<div class="language-select">
-<select id="language-select">
-<option value="en">English</option>
-<option value="zh">繁體中文</option>
-<option value="ja">日本語</option>
-<option value="fr">Français</option>
-<option value="de">Deutsch</option>
-<option value="es">Español</option>
-</select>
-</div>
-</nav>
+  <div class="appbar">
+    <div class="brand">
+      <div class="logo"><span class="material-icons">photo_camera</span></div>
+      <span>ID Photo DIY – Professional Document Photo Tool</span>
+    </div>
+    <div class="bar-spacer"></div>
+  </div>
 </header>
+
 <main>
-<div class="hero">
-<h1 data-i18n="heroTitle">專業證件照，<br/>輕鬆裁切。</h1>
-<p data-i18n="heroSubtitle">上傳您的照片，選擇規格，我們的智慧裁切工具將協助您製作符合規範的專業證件照。</p>
-</div>
-<div class="main-card">
-<div class="upload-section" id="upload-view">
-<div class="upload-icon">
-<svg fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M12 16.5V9.75m0 0l-3.75 3.75M12 9.75l3.75 3.75M3 17.25V6.75A2.25 2.25 0 015.25 4.5h13.5A2.25 2.25 0 0121 6.75v10.5A2.25 2.25 0 0118.75 19.5H5.25A2.25 2.25 0 013 17.25z" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</div>
-<h2>Click or drag to upload photos</h2>
-<p>Support JPG, PNG formats</p>
-</div>
-<input accept="image/jpeg, image/png" id="file-input" type="file"/>
-<div class="processing-view" id="processing-view">
-<div class="image-editor-container">
-<div class="cropper-container">
-<img alt="待裁切圖片" id="image-to-crop"/>
-</div>
-</div>
-<div class="controls">
-<div class="control-group">
-<label data-i18n="selectLabel" for="spec-select">選擇國家／地區與證件類型</label>
-<select id="spec-select"></select>
-</div>
-<div class="action-buttons">
-<button class="action-button secondary-button" data-i18n="changePhoto" id="change-photo-btn">更換照片</button>
-<button class="action-button" data-i18n="downloadPhoto" id="crop-download-btn">完成並下載</button>
-</div>
-</div>
-</div>
-</div>
+  <div class="grid">
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span class="material-icons">collections</span>
+          File & Thumbnails
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="upload-view" class="dropzone">
+          <span class="material-icons">cloud_upload</span>
+          <div style="font-weight:600;margin-bottom:8px;">Click or drag to upload image</div>
+          <div class="helper with-icon"><span class="material-icons">info</span>Supports JPG / PNG; crop & adjust brightness/contrast/saturation after upload.</div>
+        </div>
+        <input accept="image/jpeg,image/png" id="file-input" type="file"/>
+
+        <div class="control-group" style="margin-top:20px;">
+          <label for="rename-input"><span class="material-icons">drive_file_rename_outline</span> Rename (no extension)</label>
+          <input id="rename-input" type="text" placeholder="e.g. my_passport_photo"/>
+          <div class="helper with-icon"><span class="material-icons">help_outline</span> Used for filename when downloading; leave blank to keep original.</div>
+        </div>
+
+        <div class="thumbs">
+          <div class="thumb">
+            <h4><span class="material-icons">image</span>Original Thumb</h4>
+            <div class="thumb-box"><img id="original-thumb" alt="original thumb"/></div>
+          </div>
+          <div class="thumb">
+            <h4><span class="material-icons">adjust</span>Live Preview</h4>
+            <div class="thumb-box"><canvas id="preview-thumb" width="200" height="140"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span class="material-icons">tune</span>
+          Edit & Export
+        </div>
+      </div>
+      <div class="card-body editor-card-body">
+        <div id="editor-overlay" class="editor-overlay">
+          <span class="material-icons">image_search</span>
+          <h3 style="margin:16px 0 8px;">Please upload an image first</h3>
+          <p style="color:var(--md-text-secondary);font-size:14px;max-width:280px;">Upload a photo from the left panel, then crop & adjust parameters here.</p>
+        </div>
+
+        <div class="cropper-shell"><img id="image-to-crop" alt="image to crop"/></div>
+
+        <!-- 规格选择 -->
+        <div class="control-group" style="margin-top:20px;">
+          <label for="spec-select"><span class="material-icons">photo_size_select_large</span> Photo size template</label>
+          <select id="spec-select">
+            <option value="1/1">1:1 Square</option>
+            <option value="2/3">2:3 Ratio</option>
+            <option value="3/4">3:4 Ratio</option>
+
+            <!-- 欧美国家主流证件照 -->
+            <optgroup label="United States">
+              <option value="1/1.25">US Passport 2×2 in (51×51 mm)</option>
+              <option value="1/1.25">US Visa 2×2 in (51×51 mm)</option>
+              <option value="1/1.25">US Green Card 2×2 in (51×51 mm)</option>
+            </optgroup>
+            <optgroup label="Canada">
+              <option value="1.3/1.7">Canada Passport 50×70 mm</option>
+              <option value="1.3/1.7">Canada Visa 35×45 mm</option>
+              <option value="1.3/1.7">Canada PR 35×45 mm</option>
+            </optgroup>
+            <optgroup label="United Kingdom">
+              <option value="1/1.29">UK Passport 35×45</option>
+            </optgroup>
+            <optgroup label="European Union / Schengen">
+              <option value="35/45">EU / Schengen Passport 35×45 mm</option>
+              <option value="35/45">EU ID Card 35×45 mm</option>
+              <option value="35/45">EU Visa 35×45 mm</option>
+            </optgroup>
+            <optgroup label="Australia">
+              <option value="35/45">Australia Passport 35×45 mm</option>
+              <option value="35/45">Australia Visa 35×45 mm</option>
+            </optgroup>
+            <optgroup label="New Zealand">
+              <option value="35/45">NZ Passport 35×45 mm</option>
+              <option value="35/45">NZ Visa 35×45 mm</option>
+            </optgroup>
+            <optgroup label="Ireland">
+              <option value="35/45">Ireland Passport 35×45 mm</option>
+              <option value="35/45">Ireland Visa 35×45 mm</option>
+            </optgroup>
+            <optgroup label="Switzerland & Norway">
+              <option value="35/45">CH / NO Passport 35×45 mm</option>
+              <option value="35/45">CH / NO Visa 35×45 mm</option>
+            </optgroup>
+            <optgroup label="Custom">
+              <option value="custom">Custom…</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <!-- 自定义输入区（已去掉宽高比，只留 mm 输入） -->
+        <div id="custom-box">
+          <div class="custom-opt">
+            <label>Exact size (mm) – W × H</label>
+            <div class="cm-row" style="display:flex;gap:8px;">
+              <input id="custom-w-mm" type="number" step="1" placeholder="Width (mm)">
+              <span>×</span>
+              <input id="custom-h-mm" type="number" step="1" placeholder="Height (mm)">
+            </div>
+          </div>
+        </div>
+
+        <!-- 调整滑块 -->
+        <div class="sliders">
+          <div class="slider-container">
+            <div class="control-label">
+              <span class="icon-bg"><span class="material-icons">brightness_medium</span></span>
+              <span>Brightness</span>
+            </div>
+            <div class="slider-wrapper">
+              <div class="slider-fill" id="brightness-fill"></div>
+              <input type="range" id="brightness" class="slider" min="0" max="200" value="100">
+            </div>
+            <div class="input-wrapper">
+              <input type="number" id="brightness-input" class="manual-input" min="0" max="200" value="100">
+              <span>%</span>
+            </div>
+          </div>
+          <div class="slider-container">
+            <div class="control-label">
+              <span class="icon-bg"><span class="material-icons">contrast</span></span>
+              <span>Contrast</span>
+            </div>
+            <div class="slider-wrapper">
+              <div class="slider-fill" id="contrast-fill"></div>
+              <input type="range" id="contrast" class="slider" min="0" max="200" value="100">
+            </div>
+            <div class="input-wrapper">
+              <input type="number" id="contrast-input" class="manual-input" min="0" max="200" value="100">
+              <span>%</span>
+            </div>
+          </div>
+          <div class="slider-container">
+            <div class="control-label">
+              <span class="icon-bg"><span class="material-icons">invert_colors</span></span>
+              <span>Saturation</span>
+            </div>
+            <div class="slider-wrapper">
+              <div class="slider-fill" id="saturation-fill"></div>
+              <input type="range" id="saturation" class="slider" min="0" max="200" value="100">
+            </div>
+            <div class="input-wrapper">
+              <input type="number" id="saturation-input" class="manual-input" min="0" max="200" value="100">
+              <span>%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 导出格式 -->
+        <div class="control-group">
+          <label for="format-select"><span class="material-icons">folder</span> Export format</label>
+          <select id="format-select">
+            <option value="original">Keep original</option>
+            <option value="image/jpeg">JPG</option>
+            <option value="image/png">PNG</option>
+            <option value="image/webp">WebP</option>
+          </select>
+        </div>
+
+        <!-- 按钮区 -->
+        <div class="actions">
+          <button class="btn btn-tonal" id="reset-btn">
+            <span class="material-icons">restart_alt</span> Reset
+          </button>
+          <button class="btn btn-primary" id="crop-download-btn">
+            <span class="btn-content">
+              <span class="material-icons">download</span> Finish & Download
+            </span>
+          </button>
+        </div>
+
+        <p class="helper with-icon" style="margin-top:16px;">
+          <span class="material-icons">lightbulb_outline</span>
+          Tip: mouse-wheel to zoom, drag to move; resize crop box freely.
+        </p>
+      </div>
+    </section>
+  </div>
 </main>
-<footer>
-<div class="footer-content">
-<p>Copyright © 2025 Idphotodiy. All rights reserved.</p>
-<p>Welcome to this website.</p>
-</div>
-</footer>
+
+<footer>Copyright © 2025 Idphotodiy. All rights reserved.</footer>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 <script>
-        const uploadView = document.getElementById('upload-view');
-        const fileInput = document.getElementById('file-input');
-        const processingView = document.getElementById('processing-view');
-        const imageToCrop = document.getElementById('image-to-crop');
-        const changePhotoButton = document.getElementById('change-photo-btn');
-        const specSelect = document.getElementById('spec-select');
-        const cropDownloadBtn = document.getElementById('crop-download-btn');
+/* ---------- 以下脚本与上一段完全连续，仅移除 customRatio 相关 ---------- */
+const $  = q => document.querySelector(q);
+const $$ = q => document.querySelectorAll(q);
 
-        let cropper;
-        let originalFile = null;
+/* ---- DOM ---- */
+const uploadView   = $('#upload-view');
+const fileInput    = $('#file-input');
+const imageToCrop  = $('#image-to-crop');
+const resetBtn     = $('#reset-btn');
+const specSel      = $('#spec-select');
+const cropBtn      = $('#crop-download-btn');
+const brightS      = $('#brightness');
+const contrastS    = $('#contrast');
+const saturateS    = $('#saturation');
+const brightF      = $('#brightness-fill');
+const contrastF    = $('#contrast-fill');
+const saturateF    = $('#saturation-fill');
+const brightI      = $('#brightness-input');
+const contrastI    = $('#contrast-input');
+const saturateI    = $('#saturation-input');
+const formatSel    = $('#format-select');
+const renameInput  = $('#rename-input');
+const origThumb    = $('#original-thumb');
+const previewCv    = $('#preview-thumb');
+const previewCtx   = previewCv.getContext('2d');
+const overlay      = $('#editor-overlay');
+const customBox    = $('#custom-box');
+const customWmm    = $('#custom-w-mm');
+const customHmm    = $('#custom-h-mm');
 
-        // 觸發文件選擇
-        uploadView.addEventListener('click', () => fileInput.click());
+/* ---- state ---- */
+let cropper = null, originalFile = null, originalURL = null, rafToken = null;
 
-        // 處理文件上傳
-        fileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                originalFile = file; // 保存原始文件信息
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    imageToCrop.src = e.target.result;
-                    
-                    uploadView.style.display = 'none';
-                    processingView.style.display = 'block';
-
-                    // 初始化 Cropper
-                    initializeCropper();
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-        
-        // 初始化或重置 Cropper 實例
-        function initializeCropper() {
-            if (cropper) {
-                cropper.destroy();
-            }
-            
-            const selectedSpec = specSelect.value;
-            const aspectRatio = eval(selectedSpec); // 計算長寬比
-
-            cropper = new Cropper(imageToCrop, {
-                aspectRatio: aspectRatio,
-                viewMode: 1, // 限制裁切框在圖片範圍內
-                autoCropArea: 0.8, // 初始裁切區佔圖片80%
-                dragMode: 'move', // 允許移動圖片
-                guides: true,
-                center: true,
-                background: false,
-                cropBoxMovable: true,
-                cropBoxResizable: true,
-            });
-        }
-
-        // 當規格改變時，更新裁切比例
-        specSelect.addEventListener('change', () => {
-             if(cropper) {
-                const newAspectRatio = eval(specSelect.value);
-                cropper.setAspectRatio(newAspectRatio);
-             }
-        });
-
-        // "更換照片" 按鈕事件
-        changePhotoButton.addEventListener('click', () => {
-            if (cropper) {
-                cropper.destroy();
-            }
-            processingView.style.display = 'none';
-            uploadView.style.display = 'block';
-            fileInput.value = ''; // 重置文件輸入
-            originalFile = null;
-        });
-
-        // "完成並下載" 按鈕事件
-        cropDownloadBtn.addEventListener('click', () => {
-            if (cropper && originalFile) {
-                const croppedCanvas = cropper.getCroppedCanvas({
-                    // 為了獲得高品質圖片，可以設置較高的寬高
-                    // 實際應用中，應根據所選規格的物理尺寸和dpi來計算
-                    width: 800, 
-                    fillColor: '#FFFFFF' // 設置背景填充為白色
-                });
-
-                // 創建一個下載連結
-                const link = document.createElement('a');
-                link.href = croppedCanvas.toDataURL('image/jpeg', 0.95); // 轉換為高品質JPG
-                
-                // 從原始文件名生成新文件名
-                const originalFileName = originalFile.name.substring(0, originalFile.name.lastIndexOf('.'));
-                link.download = `${originalFileName}_passport_photo.jpg`;
-                
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-        });
-        
-        // 拖曳上傳功能
-        uploadView.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadView.style.borderColor = 'var(--highlight-color)';
-        });
-
-        uploadView.addEventListener('dragleave', (e) => {
-            e.preventDefault();
-            uploadView.style.borderColor = 'var(--separator-color)';
-        });
-        
-        uploadView.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadView.style.borderColor = 'var(--separator-color)';
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                fileInput.files = files;
-                fileInput.dispatchEvent(new Event('change'));
-            }
-        });
-
-    </script>
-<script>const translations = {
-    en: {
-        heroTitle: "Professional ID Photos,<br>Made Easy.",
-        heroSubtitle: "Upload your photo and select the document type. Our smart crop tool will do the rest.",
-        selectLabel: "Select Country/Region and Document Type",
-        changePhoto: "Change Photo",
-        downloadPhoto: "Download"
-    },
-    zh: {
-        heroTitle: "專業證件照，<br>輕鬆裁切。",
-        heroSubtitle: "上傳您的照片，選擇規格，我們的智慧裁切工具將協助您製作符合規範的專業證件照。",
-        selectLabel: "選擇國家／地區與證件類型",
-        changePhoto: "更換照片",
-        downloadPhoto: "完成並下載"
-    },
-    ja: {
-        heroTitle: "プロの証明写真を、<br>簡単に作成。",
-        heroSubtitle: "写真をアップロードし、証明書の種類を選択してください。自動で切り抜きます。",
-        selectLabel: "国・地域と証明書の種類を選択",
-        changePhoto: "写真を変更",
-        downloadPhoto: "ダウンロード"
-    },
-    fr: {
-        heroTitle: "Photos d'identité<br>professionnelles, simplifiées.",
-        heroSubtitle: "Téléchargez votre photo, choisissez le document, et nous nous occupons du reste.",
-        selectLabel: "Sélectionnez le pays/région et le type de document",
-        changePhoto: "Changer la photo",
-        downloadPhoto: "Télécharger"
-    },
-    de: {
-        heroTitle: "Professionelle Passfotos,<br>leicht gemacht.",
-        heroSubtitle: "Laden Sie Ihr Foto hoch, wählen Sie das Dokument aus, und wir kümmern uns um den Rest.",
-        selectLabel: "Land/Region und Dokumententyp auswählen",
-        changePhoto: "Foto ändern",
-        downloadPhoto: "Herunterladen"
-    },
-    es: {
-        heroTitle: "Fotos de identificación profesionales,<br>hechas fácilmente.",
-        heroSubtitle: "Sube tu foto y elige el tipo de documento. Nuestra herramienta inteligente se encargará del resto.",
-        selectLabel: "Selecciona país/región y tipo de documento",
-        changePhoto: "Cambiar foto",
-        downloadPhoto: "Descargar"
-    }
-};
-
-const documentOptions = {
-    en: `<optgroup label="Asia">
-        <option value="3.5/4.5">Taiwan – Passport / National ID (3.5cm x 4.5cm)</option>
-        <option value="3.5/4.5">Japan – Passport / Resume Photo (3.5cm x 4.5cm)</option>
-        <option value="3.3/4.8">China – Passport (3.3cm x 4.8cm)</option>
-    </optgroup>
-    <optgroup label="Americas">
-        <option value="1/1">United States – Passport (2" x 2")</option>
-        <option value="2/2">United States – Visa / Green Card / EAD (2" x 2")</option>
-        <option value="2/2">United States – Driver’s License (varies)</option>
-        <option value="35/45">Canada – Passport / Visa (35mm x 45mm)</option>
-    </optgroup>
-    <optgroup label="Europe">
-        <option value="35/45">United Kingdom – Passport (35mm x 45mm)</option>
-        <option value="35/45">Germany – Passport / ID Card (35mm x 45mm)</option>
-        <option value="35/45">France – Passport / Visa (35mm x 45mm)</option>
-        <option value="35/45">Italy – Passport (35mm x 45mm)</option>
-        <option value="35/45">Spain – Passport / DNI (35mm x 45mm)</option>
-        <option value="35/45">Netherlands – Passport (35mm x 45mm)</option>
-        <option value="35/45">Switzerland – Passport / ID Card (35mm x 45mm)</option>
-        <option value="35/45">Schengen Area – Visa (3.5cm x 4.5cm)</option>
-    </optgroup>
-    <optgroup label="Oceania">
-        <option value="35/45">Australia – Passport / Visa (35mm x 45mm)</option>
-        <option value="35/45">New Zealand – Passport / Driver’s License (35mm x 45mm)</option>
-    </optgroup>
-    <optgroup label="Other">
-        <option value="NaN">Custom Crop</option>
-    </optgroup>`
-};
-
-function updateLanguage(lang) {
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-        const key = el.getAttribute("data-i18n");
-        if (translations[lang] && translations[lang][key]) {
-            el.innerHTML = translations[lang][key];
-        }
-    });
-    const specSelect = document.getElementById("spec-select");
-    if (documentOptions["en"]) {
-        specSelect.innerHTML = documentOptions["en"];
-    }
+/* ---- util ---- */
+function parseRatio(str) {
+  const [w, h] = String(str).split('/').map(Number);
+  return (w > 0 && h > 0) ? w / h : NaN;
+}
+function currentFilter() {
+  const b = brightS.value / 100, c = contrastS.value / 100, s = saturateS.value / 100;
+  return `brightness(${b}) contrast(${c}) saturate(${s})`;
+}
+function showToast(msg) {
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.classList.add('show'), 10);
+  setTimeout(() => { t.classList.remove('show'); t.addEventListener('transitionend', () => t.remove()); }, 2500);
+}
+function updateSliderFill(slider, fill) {
+  const p = (slider.value - slider.min) / (slider.max - slider.min) * 100;
+  fill.style.setProperty('--slider-fill', `${p}%`);
+}
+function resetSliders() {
+  [brightS, contrastS, saturateS].forEach(s => s.value = 100);
+  [brightI, contrastI, saturateI].forEach(i => i.value = 100);
+  updateSliderFill(brightS, brightF); updateSliderFill(contrastS, contrastF); updateSliderFill(saturateS, saturateF);
+  applyAdj();
+}
+function applyAdj() {
+  const container = document.querySelector('.cropper-container');
+  const fs = currentFilter();
+  if (container) container.style.setProperty('--editor-filter', fs);
+  else imageToCrop.style.filter = fs;
+  reqThumb();
+}
+function reqThumb() { if (rafToken) return; rafToken = requestAnimationFrame(updateThumb); }
+function updateThumb() {
+  rafToken = null; if (!cropper) return;
+  const canvas = cropper.getCroppedCanvas({ width: 400, fillColor: '#fff' }); if (!canvas) return;
+  const maxW = previewCv.width, maxH = previewCv.height;
+  let dw = canvas.width, dh = canvas.height, ratio = Math.min(maxW / dw, maxH / dh);
+  dw = Math.max(1, Math.floor(dw * ratio)); dh = Math.max(1, Math.floor(dh * ratio));
+  previewCtx.clearRect(0, 0, maxW, maxH); previewCtx.save(); previewCtx.filter = currentFilter();
+  previewCtx.drawImage(canvas, (maxW - dw) / 2, (maxH - dh) / 2, dw, dh); previewCtx.restore();
 }
 
-document.getElementById("language-select").addEventListener("change", function() {
-    updateLanguage(this.value);
+/* ---- cropper ---- */
+function getCurrentAspectRatio() {
+  if (specSel.value !== 'custom') return parseRatio(specSel.value);
+  // 只根据输入的 mm 值计算宽高比
+  const w = parseFloat(customWmm.value), h = parseFloat(customHmm.value);
+  return (w > 0 && h > 0) ? w / h : NaN;
+}
+function initCropper() {
+  if (cropper) cropper.destroy();
+  const ar = getCurrentAspectRatio();
+  cropper = new Cropper(imageToCrop, {
+    aspectRatio: isNaN(ar) ? NaN : ar,
+    viewMode: 1, autoCropArea: 0.8, dragMode: 'move',
+    guides: true, center: true, background: false,
+    cropBoxMovable: true, cropBoxResizable: true,
+    ready() { applyAdj(); reqThumb(); overlay.classList.add('hidden'); },
+    crop() { reqThumb(); }
+  });
+}
+
+/* ---- events ---- */
+uploadView.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', e => {
+  const f = e.target.files?.[0]; if (!f) return;
+  originalFile = f; const r = new FileReader();
+  r.onload = ev => {
+    originalURL = ev.target.result;
+    imageToCrop.src = originalURL;
+    origThumb.src = originalURL;
+    const dot = f.name.lastIndexOf('.'); renameInput.value = dot > -1 ? f.name.slice(0, dot) : f.name;
+    initCropper();
+  }; r.readAsDataURL(f);
+});
+specSel.addEventListener('change', () => {
+  const isCustom = specSel.value === 'custom';
+  customBox.classList.toggle('active', isCustom);
+  if (cropper) { cropper.setAspectRatio(getCurrentAspectRatio()); reqThumb(); }
+});
+[customWmm, customHmm].forEach(el =>
+  el.addEventListener('input', () => { if (cropper) { cropper.setAspectRatio(getCurrentAspectRatio()); reqThumb(); } })
+);
+
+/* ---- sliders ---- */
+brightS .addEventListener('input', e => { brightI.value = e.target.value; updateSliderFill(brightS, brightF); applyAdj(); });
+brightI .addEventListener('input', e => { const v = Math.max(0, Math.min(200, parseInt(e.target.value) || 0)); brightS.value = v; updateSliderFill(brightS, brightF); applyAdj(); });
+contrastS.addEventListener('input', e => { contrastI.value = e.target.value; updateSliderFill(contrastS, contrastF); applyAdj(); });
+contrastI.addEventListener('input', e => { const v = Math.max(0, Math.min(200, parseInt(e.target.value) || 0)); contrastS.value = v; updateSliderFill(contrastS, contrastF); applyAdj(); });
+saturateS.addEventListener('input', e => { saturateI.value = e.target.value; updateSliderFill(saturateS, saturateF); applyAdj(); });
+saturateI.addEventListener('input', e => { const v = Math.max(0, Math.min(200, parseInt(e.target.value) || 0)); saturateS.value = v; updateSliderFill(saturateS, saturateF); applyAdj(); });
+
+resetBtn.addEventListener('click', () => { resetSliders(); if (cropper) cropper.reset(); });
+
+/* ---- download ---- */
+cropBtn.addEventListener('click', () => {
+  if (!cropper || !originalFile) { showToast('Please upload an image first'); return; }
+  const btnContent = cropBtn.querySelector('.btn-content');
+  const origHTML = btnContent.innerHTML;
+  btnContent.innerHTML = '<div class="loading"></div> Processing…'; cropBtn.disabled = true;
+  setTimeout(() => {
+    const cropped = cropper.getCroppedCanvas({ width: 800, fillColor: '#fff' });
+    const temp = document.createElement('canvas'); const ctx = temp.getContext('2d');
+    temp.width = cropped.width; temp.height = cropped.height; ctx.filter = currentFilter(); ctx.drawImage(cropped, 0, 0);
+    let mime = formatSel.value, quality = 0.95;
+    if (mime === 'original') mime = originalFile.type || 'image/jpeg';
+    if (mime === 'image/png') quality = 1;
+    const base = (renameInput.value || '').trim() || (originalFile.name.includes('.') ? originalFile.name.slice(0, originalFile.name.lastIndexOf('.')) : originalFile.name);
+    let ext = 'jpg'; if (mime === 'image/png') ext = 'png'; else if (mime === 'image/webp') ext = 'webp';
+    const link = document.createElement('a'); link.href = temp.toDataURL(mime, quality); link.download = `${base}_id_photo.${ext}`;
+    document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    btnContent.innerHTML = origHTML; cropBtn.disabled = false; showToast('Download started');
+  }, 100);
 });
 
-document.addEventListener("DOMContentLoaded", function() {
-    updateLanguage("en");
-});</script></body>
+/* ---- drag & drop ---- */
+['dragover', 'dragleave', 'drop'].forEach(evt => {
+  uploadView.addEventListener(evt, e => {
+    e.preventDefault(); if (evt === 'dragover') { uploadView.style.borderColor = 'var(--md-primary)'; uploadView.style.transform = 'translateY(-4px) scale(1.02)'; }
+    else if (evt === 'dragleave') { uploadView.style.borderColor = 'var(--md-divider)'; uploadView.style.transform = 'translateY(0) scale(1)'; }
+    else if (evt === 'drop') { uploadView.style.borderColor = 'var(--md-divider)'; uploadView.style.transform = 'translateY(0) scale(1)';
+      const fs = e.dataTransfer.files; if (fs?.length) { fileInput.files = fs; fileInput.dispatchEvent(new Event('change')); } }
+  });
+});
+
+/* ---- init ---- */
+document.addEventListener('DOMContentLoaded', () => {
+  updateSliderFill(brightS, brightF); updateSliderFill(contrastS, contrastF); updateSliderFill(saturateS, saturateF);
+});
+</script>
+</body>
 </html>
